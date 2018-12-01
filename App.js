@@ -7,6 +7,7 @@ import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 
 // Import getNews function from news.js
 import { getNews } from './src/components/new.js';
+import { getSportNews } from './src/components/sports.js';
 // We'll get to this one later
 import Article from './src/components/Article.js';
 
@@ -65,9 +66,40 @@ class TechScreen extends React.Component {
   }
 }
 class SportScreen extends React.Component {
+    constructor(props) {
+    super(props);
+    this.state = { articles: [], refreshing: true };
+    this.fetchSportsrNews = this.fetchSportsrNews.bind(this);
+  }
+  // Called after a component is mounted
+  componentDidMount() {
+    this.fetchSportsrNews();
+   }
+
+  fetchSportsrNews() {
+    getSportNews()
+      .then(articles => this.setState({ articles, refreshing: false }))
+      .catch(() => this.setState({ refreshing: false }));
+  }
+
+  handleRefresh() {
+    this.setState(
+      {
+        refreshing: true
+    },
+      () => this.fetchNews()
+    );
+  }
+
   render() {
     return (
-      <Text> Hello Yale!</Text>
+      <FlatList
+        data={this.state.articles}
+        renderItem={({ item }) => <Article article={item} />}
+        keyExtractor={item => item.url}
+        refreshing={this.state.refreshing}
+        onRefresh={this.handleRefresh.bind(this)}
+      />
   );
   }
 }
