@@ -1,8 +1,8 @@
 import React from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, WebView, View } from 'react-native';
 import { Text, Button, Card, Divider } from 'react-native-elements';
 
-import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator, createAppContainer, createStackNavigator } from 'react-navigation';
 
 
 // Import getNews function from news.js
@@ -12,6 +12,15 @@ import { getPoliticsNews } from './src/components/politics.js';
 import { getSportNews } from './src/components/sports.js';
 // We'll get to this one later
 import Article from './src/components/Article.js';
+
+
+
+
+
+
+
+
+
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -169,6 +178,25 @@ class SportScreen extends React.Component {
   }
 }
 
+class MyWeb extends React.Component {
+  render() {
+    const {navigate} = this.props.navigation;
+    return (
+      <React.Fragment>
+      <WebView
+        source={{uri: 'https://github.com/facebook/react-native'}}
+        style={{marginTop: 20}}
+      />
+      <Button
+        title="Go to Jane's profile"
+        onPress={() => navigate('Home')}
+      />
+      </React.Fragment>
+    );
+  }
+}
+
+
 const TabNavigator = createBottomTabNavigator({
   Home: HomeScreen,
   Politics: PoliticScreen,
@@ -176,5 +204,14 @@ const TabNavigator = createBottomTabNavigator({
   Sports: SportScreen,
 });
 
-export default createAppContainer(TabNavigator);
+const App = createStackNavigator({
+  Article: {screen: MyWeb},
+  Home: {screen: TabNavigator},
+  
+})
+
+
+
+export default createAppContainer(App);
+
 

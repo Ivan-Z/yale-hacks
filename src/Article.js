@@ -21,7 +21,7 @@ export default class Article extends React.Component {
     return (
       <TouchableNativeFeedback
         useForeground
-        onPress={() => Linking.openURL(url)}
+        onPress={() => navigate('Article')}
       >
         <Card
           featuredTitle={title}

@@ -1,10 +1,27 @@
 import React from 'react';
-import { View, Linking, TouchableHighlight } from 'react-native';
+import { View, Linking, WebView, TouchableHighlight } from 'react-native';
 import { Text, Button, Card, Divider } from 'react-native-elements';
 import moment from 'moment';
 
 export default class Article extends React.Component {
+  
+
+  
+
+
+
   render() {
+
+    function ShowWebView(url){
+      return (
+        <WebView
+          source={{uri: 'https://github.com/facebook/react-native'}}
+          style={{marginTop: 20}}
+        />
+      );
+    }
+    
+
     const {
       title,
       description,
@@ -21,7 +38,7 @@ export default class Article extends React.Component {
     return (
       <TouchableHighlight
         useForeground
-        onPress={() => Linking.openURL(url)}
+        onPress={() => ShowWebView(url)}
       >
         <Card
           featuredTitle={title}
@@ -44,7 +61,10 @@ export default class Article extends React.Component {
       </TouchableHighlight>
     );
   }
+
 }
+
+
 
 const styles = {
   noteStyle: {
