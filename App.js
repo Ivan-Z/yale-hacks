@@ -1,36 +1,33 @@
 import React from 'react';
-import { FlatList, WebView, View } from 'react-native';
+import { Linking, FlatList, WebView, View,TouchableHighlight } from 'react-native';
 import { Text, Button, Card, Divider } from 'react-native-elements';
+import moment from 'moment';
 
 import { createBottomTabNavigator, createAppContainer, createStackNavigator } from 'react-navigation';
 
 
-// Import getNews function from news.js
 import { getNews } from './src/components/new.js';
 import { getTechNews } from './src/components/tech.js';
 import { getPoliticsNews } from './src/components/politics.js';
 import { getSportNews } from './src/components/sports.js';
-// We'll get to this one later
-import Article from './src/components/Article.js';
-
-
-
-
-
-
-
-
+//import Article from './src/components/Article.js';
 
 
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { articles: [], refreshing: true };
+    this.state = { articles: [], refreshing: true, goToWeb: false };
     this.fetchNews = this.fetchNews.bind(this);
+    this.navigateFunc = this.navigateFunc.bind(this);
   }
   // Called after a component is mounted
   componentDidMount() {
     this.fetchNews();
+   }
+
+   navigateFunc(x) {
+    this.setState({goToWeb: x})
+    // this.props.navigation.navigate("DetailView");
    }
 
   fetchNews() {
@@ -49,10 +46,17 @@ class HomeScreen extends React.Component {
   }
 
   render() {
+    if (this.state.goToWeb){
+      let url = this.state.goToWeb
+      return  (<WebView
+              source={{uri: url}}
+              style={{marginTop: 20}}
+            />)
+    }
     return (
       <FlatList
         data={this.state.articles}
-        renderItem={({ item }) => <Article article={item} />}
+        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc} />}
         keyExtractor={item => item.url}
         refreshing={this.state.refreshing}
         onRefresh={this.handleRefresh.bind(this)}
@@ -188,10 +192,10 @@ class MyWeb extends React.Component {
         style={{marginTop: 20}}
       />
       <Button
-        title="Go to Jane's profile"
+        title="Go to next screen"
         onPress={() => navigate('Home')}
       />
-      </React.Fragment>
+    </React.Fragment>
     );
   }
 }
@@ -205,12 +209,75 @@ const TabNavigator = createBottomTabNavigator({
 });
 
 const App = createStackNavigator({
-  Article: {screen: MyWeb},
+  DetailView: {screen: MyWeb},
   Home: {screen: TabNavigator},
   
 })
 
+class Article extends React.Component {
 
+  render() {
+
+    const {
+      title,
+      description,
+      publishedAt,
+      source,
+      urlToImage,
+      url
+    } = this.props.article;
+    const { noteStyle, featuredTitleStyle } = styles;
+    const time = moment(publishedAt || moment.now()).fromNow();
+    const defaultImg =
+    'https://wallpaper.wiki/wp-content/uploads/2017/04/wallpaper.wiki-Images-HD-Diamond-Pattern-PIC-WPB009691.jpg';
+
+    // const {navigate} = this.props.navigation;
+
+    return (
+      <TouchableHighlight
+        useForeground
+        onPress={() => this.props.navigateFunc(url)}
+      >
+        <Card
+          featuredTitle={title}
+          featuredTitleStyle={featuredTitleStyle}
+          image={{
+            uri: urlToImage || defaultImg
+          }}
+        >
+          <Text style={{ marginBottom: 10 }}>
+            {description || 'Read More..'}
+          </Text>
+          <Divider style={{ backgroundColor: '#dfe6e9' }} />
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text style={noteStyle}>{source.name.toUpperCase()}</Text>
+            <Text style={noteStyle}>{time}</Text>
+          </View>
+        </Card>
+      </TouchableHighlight>
+    );
+  }
+
+}
+
+
+
+const styles = {
+  noteStyle: {
+    margin: 5,
+    fontStyle: 'italic',
+    color: '#b2bec3',
+    fontSize: 10
+  },
+  featuredTitleStyle: {
+    marginHorizontal: 5,
+    textShadowColor: '#00000f',
+    textShadowOffset: { width: 3, height: 3 },
+    textShadowRadius: 3
+  }
+};
 
 export default createAppContainer(App);
 
