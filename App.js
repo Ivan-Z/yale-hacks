@@ -70,10 +70,17 @@ class PoliticScreen extends React.Component {
     super(props);
     this.state = { articles: [], refreshing: true };
     this.fetchPoliticNews = this.fetchPoliticNews.bind(this);
+    this.navigateFunc = this.navigateFunc.bind(this);
+
   }
   // Called after a component is mounted
   componentDidMount() {
     this.fetchPoliticNews();
+   }
+
+   navigateFunc(x) {
+    this.setState({goToWeb: x})
+    // this.props.navigation.navigate("DetailView");
    }
 
   fetchPoliticNews() {
@@ -91,11 +98,18 @@ class PoliticScreen extends React.Component {
     );
   }
 
-  render() {
+   render() {
+    if (this.state.goToWeb){
+      let url = this.state.goToWeb
+      return  (<WebView
+              source={{uri: url}}
+              style={{marginTop: 20}}
+            />)
+    }
     return (
       <FlatList
         data={this.state.articles}
-        renderItem={({ item }) => <Article article={item} />}
+        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc} />}
         keyExtractor={item => item.url}
         refreshing={this.state.refreshing}
         onRefresh={this.handleRefresh.bind(this)}
@@ -109,6 +123,8 @@ class TechScreen extends React.Component {
     super(props);
     this.state = { articles: [], refreshing: true };
     this.fetchTechNews = this.fetchTechNews.bind(this);
+    this.navigateFunc = this.navigateFunc.bind(this);
+
   }
   // Called after a component is mounted
   componentDidMount() {
@@ -121,6 +137,11 @@ class TechScreen extends React.Component {
       .catch(() => this.setState({ refreshing: false }));
   }
 
+  navigateFunc(x) {
+    this.setState({goToWeb: x})
+    // this.props.navigation.navigate("DetailView");
+   }
+
   handleRefresh() {
     this.setState(
       {
@@ -130,11 +151,18 @@ class TechScreen extends React.Component {
     );
   }
 
-  render() {
+   render() {
+    if (this.state.goToWeb){
+      let url = this.state.goToWeb
+      return  (<WebView
+              source={{uri: url}}
+              style={{marginTop: 20}}
+            />)
+    }
     return (
       <FlatList
         data={this.state.articles}
-        renderItem={({ item }) => <Article article={item} />}
+        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc} />}
         keyExtractor={item => item.url}
         refreshing={this.state.refreshing}
         onRefresh={this.handleRefresh.bind(this)}
@@ -148,6 +176,8 @@ class SportScreen extends React.Component {
     super(props);
     this.state = { articles: [], refreshing: true };
     this.fetchSportsNews = this.fetchSportsNews.bind(this);
+        this.navigateFunc = this.navigateFunc.bind(this);
+
   }
   // Called after a component is mounted
   componentDidMount() {
@@ -160,6 +190,11 @@ class SportScreen extends React.Component {
       .catch(() => this.setState({ refreshing: false }));
   }
 
+  navigateFunc(x) {
+    this.setState({goToWeb: x})
+    // this.props.navigation.navigate("DetailView");
+   }
+
   handleRefresh() {
     this.setState(
       {
@@ -169,11 +204,18 @@ class SportScreen extends React.Component {
     );
   }
 
-  render() {
+   render() {
+    if (this.state.goToWeb){
+      let url = this.state.goToWeb
+      return  (<WebView
+              source={{uri: url}}
+              style={{marginTop: 20}}
+            />)
+    }
     return (
       <FlatList
         data={this.state.articles}
-        renderItem={({ item }) => <Article article={item} />}
+        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc} />}
         keyExtractor={item => item.url}
         refreshing={this.state.refreshing}
         onRefresh={this.handleRefresh.bind(this)}
@@ -186,20 +228,14 @@ class MyWeb extends React.Component {
   render() {
     const {navigate} = this.props.navigation;
     return (
-      <React.Fragment>
       <WebView
         source={{uri: 'https://github.com/facebook/react-native'}}
         style={{marginTop: 20}}
       />
-      <Button
-        title="Go to next screen"
-        onPress={() => navigate('Home')}
-      />
-    </React.Fragment>
+
     );
   }
 }
-
 
 const TabNavigator = createBottomTabNavigator({
   Home: HomeScreen,
@@ -209,9 +245,10 @@ const TabNavigator = createBottomTabNavigator({
 });
 
 const App = createStackNavigator({
-  DetailView: {screen: MyWeb},
   Home: {screen: TabNavigator},
-  
+  DetailView: {screen: MyWeb},
+
+
 })
 
 class Article extends React.Component {
