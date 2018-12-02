@@ -16,7 +16,7 @@ import { getSportNews } from './src/components/sports.js';
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { articles: [], refreshing: true, goToWeb: false };
+    this.state = { articles: [], refreshing: true };
     this.fetchNews = this.fetchNews.bind(this);
     this.navigateFunc = this.navigateFunc.bind(this);
   }
@@ -26,8 +26,7 @@ class HomeScreen extends React.Component {
    }
 
    navigateFunc(x) {
-    this.setState({goToWeb: x})
-    // this.props.navigation.navigate("DetailView");
+    this.props.navigation.navigate("DetailView", {url: x});
    }
 
   fetchNews() {
@@ -46,13 +45,6 @@ class HomeScreen extends React.Component {
   }
 
   render() {
-    if (this.state.goToWeb){
-      let url = this.state.goToWeb
-      return  (<WebView
-              source={{uri: url}}
-              style={{marginTop: 20}}
-            />)
-    }
     return (
       <FlatList
         data={this.state.articles}
@@ -71,16 +63,16 @@ class PoliticScreen extends React.Component {
     this.state = { articles: [], refreshing: true };
     this.fetchPoliticNews = this.fetchPoliticNews.bind(this);
     this.navigateFunc = this.navigateFunc.bind(this);
-
   }
+
+     navigateFunc(x) {
+    // this.setState({goToWeb: x})
+    this.props.navigation.navigate("DetailView", {url: x});
+   }
+
   // Called after a component is mounted
   componentDidMount() {
     this.fetchPoliticNews();
-   }
-
-   navigateFunc(x) {
-    this.setState({goToWeb: x})
-    // this.props.navigation.navigate("DetailView");
    }
 
   fetchPoliticNews() {
@@ -98,8 +90,8 @@ class PoliticScreen extends React.Component {
     );
   }
 
-   render() {
-    if (this.state.goToWeb){
+  render() {
+        if (this.state.goToWeb){
       let url = this.state.goToWeb
       return  (<WebView
               source={{uri: url}}
@@ -124,8 +116,12 @@ class TechScreen extends React.Component {
     this.state = { articles: [], refreshing: true };
     this.fetchTechNews = this.fetchTechNews.bind(this);
     this.navigateFunc = this.navigateFunc.bind(this);
-
   }
+
+     navigateFunc(x) {
+    // this.setState({goToWeb: x})
+    this.props.navigation.navigate("DetailView", {url: x});
+   }
   // Called after a component is mounted
   componentDidMount() {
     this.fetchTechNews();
@@ -137,11 +133,6 @@ class TechScreen extends React.Component {
       .catch(() => this.setState({ refreshing: false }));
   }
 
-  navigateFunc(x) {
-    this.setState({goToWeb: x})
-    // this.props.navigation.navigate("DetailView");
-   }
-
   handleRefresh() {
     this.setState(
       {
@@ -151,14 +142,7 @@ class TechScreen extends React.Component {
     );
   }
 
-   render() {
-    if (this.state.goToWeb){
-      let url = this.state.goToWeb
-      return  (<WebView
-              source={{uri: url}}
-              style={{marginTop: 20}}
-            />)
-    }
+  render() {
     return (
       <FlatList
         data={this.state.articles}
@@ -176,9 +160,13 @@ class SportScreen extends React.Component {
     super(props);
     this.state = { articles: [], refreshing: true };
     this.fetchSportsNews = this.fetchSportsNews.bind(this);
-        this.navigateFunc = this.navigateFunc.bind(this);
-
+    this.navigateFunc = this.navigateFunc.bind(this);
   }
+
+     navigateFunc(x) {
+    // this.setState({goToWeb: x})
+    this.props.navigation.navigate("DetailView", {url: x});
+   }
   // Called after a component is mounted
   componentDidMount() {
     this.fetchSportsNews();
@@ -190,11 +178,6 @@ class SportScreen extends React.Component {
       .catch(() => this.setState({ refreshing: false }));
   }
 
-  navigateFunc(x) {
-    this.setState({goToWeb: x})
-    // this.props.navigation.navigate("DetailView");
-   }
-
   handleRefresh() {
     this.setState(
       {
@@ -204,18 +187,11 @@ class SportScreen extends React.Component {
     );
   }
 
-   render() {
-    if (this.state.goToWeb){
-      let url = this.state.goToWeb
-      return  (<WebView
-              source={{uri: url}}
-              style={{marginTop: 20}}
-            />)
-    }
+  render() {
     return (
       <FlatList
         data={this.state.articles}
-        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc} />}
+        renderItem={({ item }) => <Article article={item} navigateFunc={this.navigateFunc}/>}
         keyExtractor={item => item.url}
         refreshing={this.state.refreshing}
         onRefresh={this.handleRefresh.bind(this)}
@@ -225,17 +201,25 @@ class SportScreen extends React.Component {
 }
 
 class MyWeb extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      url: this.props.navigation.state.params.url
+    }
+  }
   render() {
     const {navigate} = this.props.navigation;
     return (
+      <React.Fragment>
       <WebView
-        source={{uri: 'https://github.com/facebook/react-native'}}
+        source={{uri: this.state.url}}
         style={{marginTop: 20}}
       />
-
+    </React.Fragment>
     );
   }
 }
+
 
 const TabNavigator = createBottomTabNavigator({
   Home: HomeScreen,
@@ -247,8 +231,6 @@ const TabNavigator = createBottomTabNavigator({
 const App = createStackNavigator({
   Home: {screen: TabNavigator},
   DetailView: {screen: MyWeb},
-
-
 })
 
 class Article extends React.Component {
